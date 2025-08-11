@@ -1,14 +1,23 @@
 package th.mfu;
 import java.time.LocalDate;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@Entity
 public class Product {
-    private String name;
-    private Integer price;
-    private String description;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String name;
+    private Double price;
+    private String description;
     private LocalDate manufactureDate;
     
     public String getName() {
@@ -19,11 +28,11 @@ public class Product {
         this.name = name;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

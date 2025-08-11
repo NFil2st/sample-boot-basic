@@ -1,9 +1,9 @@
 package th.mfu;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,26 +15,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CustomerController {
-    public static Map<Integer, Customer> customers = new HashMap<Integer, Customer>();
-    private int nextid =1;
+
+    @Autowired
+    CustomerRepository customerRepo;
 
     @GetMapping("/customers")
     public ResponseEntity<Collection> getAllCustomers() {
-        return new ResponseEntity<Collection>(customers.values(), HttpStatus.OK);
+        return new ResponseEntity<Collection>(customerRepo.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/customers")
     public ResponseEntity<String> createCustomer(@RequestBody Customer customer){
-        customer.setId(nextid);
-        customers.put(nextid, customer);
-        nextid++;
+        customerRepo.save(customer);
         return new ResponseEntity<String>("Customer created", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable Integer id){
-        if (customers.containsKey(id)) {
-            customers.remove(id);
+        if (customerRepo.existsById(id)) {
+            customerRepo.deleteById(id);
             return new ResponseEntity<String>("Customer deleted", HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<String>("Not found", HttpStatus.NOT_FOUND);
@@ -43,8 +42,9 @@ public class CustomerController {
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<Customer> getCustomers(@PathVariable Integer id) {
-        if (customers.containsKey(id)) {
-            return new ResponseEntity<Customer>(customers.get(id), HttpStatus.OK);
+        if (customerRepo.existsById(id)) {
+            Optional<Customer> customer = customerRepo.findById(id);
+            return new ResponseEntity<Customer>(customer.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);
         }

@@ -1,9 +1,9 @@
 package th.mfu;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,26 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductManager {
-    public static Map<Integer, Product> products = new HashMap<Integer, Product>();
-    private int nextid =1;
+
+    @Autowired
+    ProductRepository productRepo;
 
     @GetMapping("/products")
     public ResponseEntity<Collection> getAllProduct() {
-        return new ResponseEntity<Collection>(products.values(), HttpStatus.OK);
+        return new ResponseEntity<Collection>(productRepo.findAll(), HttpStatus.OK);
     }
-
     @PostMapping("/products")
     public ResponseEntity<String> createProduct(@RequestBody Product product){
-        product.setId(nextid);
-        products.put(nextid, product);
-        nextid++;
+        productRepo.save(product);
         return new ResponseEntity<String>("Product created", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id){
-        if (products.containsKey(id)) {
-            products.remove(id);
+        if (productRepo.existsById(id)) {
+            productRepo.deleteById(id);
             return new ResponseEntity<String>("Product deleted", HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<String>("Not found", HttpStatus.NOT_FOUND);
@@ -43,8 +41,9 @@ public class ProductManager {
 
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer id) {
-        if (products.containsKey(id)) {
-            return new ResponseEntity<Product>(products.get(id), HttpStatus.OK);
+        if (productRepo.existsById(id)) {
+            Optional<Product> product = productRepo.findById(id);
+            return new ResponseEntity<Product>(product.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
         }
