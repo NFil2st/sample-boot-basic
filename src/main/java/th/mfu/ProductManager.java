@@ -1,6 +1,7 @@
 package th.mfu;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,15 @@ public class ProductManager {
     public ResponseEntity<Collection> getAllProduct() {
         return new ResponseEntity<Collection>(productRepo.findAll(), HttpStatus.OK);
     }
+
     @PostMapping("/products")
-    public ResponseEntity<String> createProduct(@RequestBody Product product){
+    public ResponseEntity<String> createProduct(@RequestBody Product product) {
         productRepo.save(product);
         return new ResponseEntity<String>("Product created", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Integer id){
+    public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
         if (productRepo.existsById(id)) {
             productRepo.deleteById(id);
             return new ResponseEntity<String>("Product deleted", HttpStatus.NO_CONTENT);
@@ -47,5 +49,17 @@ public class ProductManager {
         } else {
             return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/products/product/{prefix}")
+    public ResponseEntity<Collection> getCustomersByDis(@PathVariable String prefix) {
+        List<Product> products = productRepo.findByDescriptionStartingWith(prefix);
+        return new ResponseEntity<Collection>(products, HttpStatus.OK);
+    }
+
+    @GetMapping("/products/price-list")
+    public ResponseEntity<Collection> getPriceProduct() {
+        List<Product> products = productRepo.findAllByOrderByPriceAsc();
+        return new ResponseEntity<Collection>(products, HttpStatus.OK);
     }
 }

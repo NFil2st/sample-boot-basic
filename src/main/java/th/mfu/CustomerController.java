@@ -1,9 +1,12 @@
 package th.mfu;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,4 +52,11 @@ public class CustomerController {
             return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/customers/name/{prefix}")
+    public ResponseEntity<Collection> getCustomersByName(@PathVariable String prefix) {
+        List<Customer> customers = customerRepo.findByNameStartingWith(prefix);
+        return new ResponseEntity<Collection>(customers, HttpStatus.OK);
+    }
+
 }

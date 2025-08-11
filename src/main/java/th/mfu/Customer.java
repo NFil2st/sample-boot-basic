@@ -16,24 +16,27 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @JsonProperty("Full Name")
-    @Column(name = "display_name")
+
     private String name;
     private String address;
     private String email;
-    @JsonProperty("tel")
+
     private String phone;
-    private LocalDate birthday;
+    private LocalDate birthDay;
+
     public String getName() {
         return name;
     }
+
+
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    public LocalDate getBirthday() {
-        return birthday;
+    public LocalDate getbirthDay() {
+        return birthDay;
     }
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
+
+    public void setbirthDay(LocalDate birthDay) {
+        this.birthDay = birthDay;
     }
     public String getAddress() {
         return address;
@@ -47,9 +50,11 @@ public class Customer {
     public String getEmail() {
         return email;
     }
+
     public String getPhone() {
         return phone;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -59,6 +64,7 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
+
     public void setPhone(String phone) {
         this.phone = phone;
     }

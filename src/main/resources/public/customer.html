@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product & Customer Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(79, 172, 254, 0.2);
+            color: #0066cc;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+        }
+
+        .tab-content {
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.6);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.6);
+        }
+
+        .response-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            min-height: 60px;
+        }
+
+        .response-area h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .response-content {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            margin-bottom: 25px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .search-form .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                margin-right: 0;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+        }
+
+        .success {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin: 10px 0;
+        }
+
+        .error {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin: 10px 0;
+        }
+
+        .data-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Product & Customer Management</h1>
+            <p>ระบบจัดการสินค้าและลูกค้าแบบครบครัน</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('products')">📦 จัดการสินค้า</button>
+            <button class="tab" onclick="showTab('customers')">👥 จัดการลูกค้า</button>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="products-tab" class="tab-content">
+            <!-- Add Product Section -->
+            <div class="section">
+                <h2>➕ เพิ่มสินค้าใหม่</h2>
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">ชื่อสินค้า *</label>
+                            <input type="text" id="productName" required placeholder="เช่น 27-inch Monitor">
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">ราคา (บาท) *</label>
+                            <input type="number" id="productPrice" step="0.01" required placeholder="4590.00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productDescription">รายละเอียดสินค้า</label>
+                        <textarea id="productDescription" placeholder="Full HD LED monitor with thin bezels"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="manufactureDate">วันที่ผลิต</label>
+                        <input type="date" id="manufactureDate">
+                    </div>
+                    
+                    <button type="submit" class="btn">➕ เพิ่มสินค้า</button>
+                </form>
+            </div>
+
+            <!-- Search Product Section -->
+            <div class="section">
+                <h2>🔍 ค้นหาสินค้าตาม Description</h2>
+                <form class="search-form" id="productSearchForm">
+                    <div class="form-group">
+                        <label for="searchDescription">ค้นหา Description สินค้า</label>
+                        <input type="text" id="searchDescription" placeholder="พิมพ์ description หรือบางส่วน เช่น High, Laptop..." required>
+                    </div>
+                    <button type="submit" class="btn btn-warning">🔍 ค้นหาสินค้า</button>
+                </form>
+            </div>
+
+            <!-- View Products Section -->
+            <div class="section">
+                <h2>📋 ดูข้อมูลสินค้า</h2>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="getProducts()">📦 ดูสินค้าทั้งหมด</button>
+                    <button class="btn btn-warning" onclick="getProductsPriceList()">💰 ดูสินค้าเรียงตามราคา</button>
+                </div>
+            </div>
+
+            <!-- Quick Test Data Section -->
+            <div class="section">
+                <h2>⚡ ข้อมูลตัวอย่างสำหรับทดสอบ</h2>
+                <p style="margin-bottom: 20px; color: #666;">กดปุ่มด้านล่างเพื่อเพิ่มข้อมูลตัวอย่างสำหรับทดสอบระบบ</p>
+                <div class="button-group">
+                    <button class="btn" onclick="addSampleProducts()">📱 เพิ่มสินค้าตัวอย่าง</button>
+                    <button class="btn" onclick="addSampleCustomers()">👥 เพิ่มลูกค้าตัวอย่าง</button>
+                </div>
+            </div>
+
+            <div class="response-area">
+                <h3>📋 ผลลัพธ์</h3>
+                <div class="loading" id="productLoading">กำลังประมวลผล...</div>
+                <div class="response-content" id="productResponse">พร้อมจัดการข้อมูลสินค้า</div>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="customers-tab" class="tab-content" style="display: none;">
+            <!-- Add Customer Section -->
+            <div class="section">
+                <h2>➕ เพิ่มลูกค้าใหม่</h2>
+                <form id="customerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">ชื่อ-นามสกุล *</label>
+                            <input type="text" id="customerName" required placeholder="เช่น นางสาวมะปราง">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">อีเมล *</label>
+                            <input type="email" id="customerEmail" required placeholder="example@email.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerPhone">เบอร์โทร *</label>
+                            <input type="tel" id="customerPhone" required placeholder="0812345678">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerBirthDay">วันเกิด</label>
+                            <input type="date" id="customerBirthDay">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerAddress">ที่อยู่</label>
+                        <textarea id="customerAddress" placeholder="123 หมู่ 1 ตำบล... อำเภอ... จังหวัด..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">➕ เพิ่มลูกค้า</button>
+                </form>
+            </div>
+
+            <!-- Search Customer Section -->
+            <div class="section">
+                <h2>🔍 ค้นหาลูกค้าตามชื่อ</h2>
+                <form class="search-form" id="searchForm">
+                    <div class="form-group">
+                        <label for="searchName">ค้นหาชื่อลูกค้า</label>
+                        <input type="text" id="searchName" placeholder="พิมพ์ชื่อหรือบางส่วนของชื่อ..." required>
+                    </div>
+                    <button type="submit" class="btn btn-warning">🔍 ค้นหา</button>
+                </form>
+            </div>
+
+            <!-- Manage Customers Section -->
+            <div class="section">
+                <h2>🎯 จัดการข้อมูลลูกค้า</h2>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="getCustomers()">👥 ดูลูกค้าทั้งหมด</button>
+                    <button class="btn btn-danger" onclick="deleteAllCustomers()">🗑️ ลบลูกค้าทั้งหมด</button>
+                </div>
+            </div>
+
+            <div class="response-area">
+                <h3>👥 ข้อมูลลูกค้า</h3>
+                <div class="loading" id="customerLoading">กำลังโหลดข้อมูล...</div>
+                <div class="response-content" id="customerResponse">พร้อมจัดการข้อมูลลูกค้า</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+        const API_KEY = '123456';
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab and mark as active
+            document.getElementById(tabName + '-tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // Format date for API (DD-MM-YYYY)
+        function formatDate(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        // Format JSON for display
+        function formatJSON(jsonString) {
+            try {
+                const parsed = JSON.parse(jsonString);
+                return JSON.stringify(parsed, null, 2);
+            } catch {
+                return jsonString;
+            }
+        }
+
+        // Product Form Handler
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const description = document.getElementById('productDescription').value;
+            const manufactureDate = formatDate(document.getElementById('manufactureDate').value);
+            
+            const productData = {
+                name: name,
+                description: description || '',
+                price: price,
+                manufactureDate: manufactureDate
+            };
+            
+            // Show loading
+            document.getElementById('productLoading').classList.add('show');
+            document.getElementById('productResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('productLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    document.getElementById('productResponse').innerHTML = `<div class="success">✅ เพิ่มสินค้าสำเร็จ!\n\nResponse (${response.status}):\n${formatJSON(responseText)}</div>`;
+                    document.getElementById('productForm').reset();
+                    // Set default date again after reset
+                    document.getElementById('manufactureDate').valueAsDate = new Date();
+                } else {
+                    document.getElementById('productResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('productLoading').classList.remove('show');
+                document.getElementById('productResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        });
+
+        // Customer Form Handler
+        document.getElementById('customerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('customerName').value;
+            const email = document.getElementById('customerEmail').value;
+            const phone = document.getElementById('customerPhone').value;
+            const address = document.getElementById('customerAddress').value;
+            const birthDay = formatDate(document.getElementById('customerBirthDay').value);
+            
+            const customerData = {
+                name: name,
+                address: address || '',
+                email: email,
+                phone: phone,
+                birthDay: birthDay
+            };
+            
+            // Show loading
+            document.getElementById('customerLoading').classList.add('show');
+            document.getElementById('customerResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/customers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(customerData)
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('customerLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    document.getElementById('customerResponse').innerHTML = `<div class="success">✅ เพิ่มลูกค้าสำเร็จ!\n\nResponse (${response.status}):\n${formatJSON(responseText)}</div>`;
+                    document.getElementById('customerForm').reset();
+                } else {
+                    document.getElementById('customerResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('customerLoading').classList.remove('show');
+                document.getElementById('customerResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        });
+
+        // Search Form Handler
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const searchName = document.getElementById('searchName').value.trim();
+            
+            if (!searchName) {
+                document.getElementById('customerResponse').innerHTML = `<div class="error">❌ กรุณาใส่ชื่อที่ต้องการค้นหา</div>`;
+                return;
+            }
+
+            // Show loading
+            document.getElementById('customerLoading').classList.add('show');
+            document.getElementById('customerResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/customers/name/${encodeURIComponent(searchName)}`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('customerLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    const formattedResponse = formatJSON(responseText);
+                    document.getElementById('customerResponse').innerHTML = `<div class="success">🔍 ผลการค้นหาลูกค้าที่มีชื่อ "${searchName}":\n\n${formattedResponse}</div>`;
+                } else {
+                    document.getElementById('customerResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาดในการค้นหา!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('customerLoading').classList.remove('show');
+                document.getElementById('customerResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        });
+
+        // Product Search Form Handler
+        document.getElementById('productSearchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const searchDescription = document.getElementById('searchDescription').value.trim();
+            
+            if (!searchDescription) {
+                document.getElementById('productResponse').innerHTML = `<div class="error">❌ กรุณาใส่ description ที่ต้องการค้นหา</div>`;
+                return;
+            }
+
+            // Show loading
+            document.getElementById('productLoading').classList.add('show');
+            document.getElementById('productResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products/product/${encodeURIComponent(searchDescription)}`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('productLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    const formattedResponse = formatJSON(responseText);
+                    document.getElementById('productResponse').innerHTML = `<div class="success">🔍 ผลการค้นหาสินค้าที่มี description "${searchDescription}":\n\n${formattedResponse}</div>`;
+                } else {
+                    document.getElementById('productResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาดในการค้นหา!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('productLoading').classList.remove('show');
+                document.getElementById('productResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        });
+
+        // Get Products Function
+        async function getProducts() {
+            document.getElementById('productLoading').classList.add('show');
+            document.getElementById('productResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': API_KEY
+                    }
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('productLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    const formattedResponse = formatJSON(responseText);
+                    document.getElementById('productResponse').innerHTML = `<div class="success">📦 ข้อมูลสินค้าทั้งหมด:\n\n${formattedResponse}</div>`;
+                } else {
+                    document.getElementById('productResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('productLoading').classList.remove('show');
+                document.getElementById('productResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        }
+
+        // Get Products Price List Function
+        async function getProductsPriceList() {
+            document.getElementById('productLoading').classList.add('show');
+            document.getElementById('productResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/products/price-list`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('productLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    const formattedResponse = formatJSON(responseText);
+                    document.getElementById('productResponse').innerHTML = `<div class="success">💰 รายการสินค้าเรียงตามราคา (ถูกไปแพง):\n\n${formattedResponse}</div>`;
+                } else {
+                    document.getElementById('productResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('productLoading').classList.remove('show');
+                document.getElementById('productResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        }
+
+        // Add Sample Products Function
+        async function addSampleProducts() {
+            const sampleProducts = [
+                {
+                    name: "Gaming Laptop",
+                    description: "High performance gaming laptop with RTX graphics",
+                    price: 45000,
+                    manufactureDate: "15-01-2024"
+                },
+                {
+                    name: "Office Laptop", 
+                    description: "Lightweight laptop for office work",
+                    price: 25000,
+                    manufactureDate: "20-02-2024"
+                },
+                {
+                    name: "Gaming Mouse",
+                    description: "High precision gaming mouse with RGB",
+                    price: 2500,
+                    manufactureDate: "10-03-2024"
+                },
+                {
+                    name: "Mechanical Keyboard",
+                    description: "High quality mechanical keyboard for gaming",
+                    price: 3500,
+                    manufactureDate: "05-04-2024"
+                },
+                {
+                    name: "4K Monitor",
+                    description: "High resolution 4K gaming monitor",
+                    price: 15000,
+                    manufactureDate: "12-05-2024"
+                }
+            ];
+
+            document.getElementById('productLoading').classList.add('show');
+            document.getElementById('productResponse').innerHTML = '';
+
+            let results = [];
+            
+            for (let product of sampleProducts) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/products`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': API_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(product)
+                    });
+                    
+                    if (response.ok) {
+                        results.push(`✅ เพิ่ม "${product.name}" สำเร็จ`);
+                    } else {
+                        results.push(`❌ เพิ่ม "${product.name}" ไม่สำเร็จ (${response.status})`);
+                    }
+                } catch (error) {
+                    results.push(`❌ เพิ่ม "${product.name}" เกิดข้อผิดพลาด: ${error.message}`);
+                }
+            }
+
+            document.getElementById('productLoading').classList.remove('show');
+            document.getElementById('productResponse').innerHTML = `<div class="success">📱 ผลการเพิ่มข้อมูลสินค้าตัวอย่าง:\n\n${results.join('\n')}</div>`;
+        }
+
+        // Add Sample Customers Function  
+        async function addSampleCustomers() {
+            const sampleCustomers = [
+                {
+                    name: "นายสมชาย ใจดี",
+                    address: "123/45 หมู่ 2 ตำบลบางพลี อำเภอบางพลี จังหวัดสมุทรปราการ 10540",
+                    email: "somchai@email.com",
+                    phone: "081-234-5678",
+                    birthDay: "15-06-1990"
+                },
+                {
+                    name: "นางสาวมาลี สวยงาม", 
+                    address: "456/78 ซอยลาดพร้าว 15 เขตจตุจักร กรุงเทพฯ 10900",
+                    email: "malee@email.com",
+                    phone: "089-876-5432", 
+                    birthDay: "22-09-1985"
+                },
+                {
+                    name: "นายลองจอห์น แฮมเมอร์",
+                    address: "789 Wireless Road, Lumpini, Pathumwan, Bangkok 10330",
+                    email: "longjohn@email.com",
+                    phone: "092-111-2233",
+                    birthDay: "10-12-1988"
+                },
+                {
+                    name: "นางสาวลิซ่า คิมจิ",
+                    address: "321 ถนนสีลม แขวงสีลม เขตบางรัก กรุงเทพฯ 10500", 
+                    email: "lisa.k@email.com",
+                    phone: "095-444-5566",
+                    birthDay: "08-03-1992"
+                }
+            ];
+
+            document.getElementById('customerLoading').classList.add('show');
+            document.getElementById('customerResponse').innerHTML = '';
+
+            let results = [];
+            
+            for (let customer of sampleCustomers) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/customers`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(customer)
+                    });
+                    
+                    if (response.ok) {
+                        results.push(`✅ เพิ่ม "${customer.name}" สำเร็จ`);
+                    } else {
+                        results.push(`❌ เพิ่ม "${customer.name}" ไม่สำเร็จ (${response.status})`);
+                    }
+                } catch (error) {
+                    results.push(`❌ เพิ่ม "${customer.name}" เกิดข้อผิดพลาด: ${error.message}`);
+                }
+            }
+
+            document.getElementById('customerLoading').classList.remove('show');
+            document.getElementById('customerResponse').innerHTML = `<div class="success">👥 ผลการเพิ่มข้อมูลลูกค้าตัวอย่าง:\n\n${results.join('\n')}</div>`;
+        }
+
+        // Get Products Function
+
+        // Get Customers Function
+        async function getCustomers() {
+            document.getElementById('customerLoading').classList.add('show');
+            document.getElementById('customerResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/customers`, {
+                    method: 'GET'
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('customerLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    const formattedResponse = formatJSON(responseText);
+                    document.getElementById('customerResponse').innerHTML = `<div class="success">👥 ข้อมูลลูกค้าทั้งหมด:\n\n${formattedResponse}</div>`;
+                } else {
+                    document.getElementById('customerResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('customerLoading').classList.remove('show');
+                document.getElementById('customerResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        }
+
+        // Delete All Customers Function
+        async function deleteAllCustomers() {
+            if (!confirm('⚠️ คุณแน่ใจหรือไม่ที่จะลบข้อมูลลูกค้าทั้งหมด?\n\nการกระทำนี้ไม่สามารถกู้คืนได้!')) {
+                return;
+            }
+            
+            document.getElementById('customerLoading').classList.add('show');
+            document.getElementById('customerResponse').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/customers`, {
+                    method: 'DELETE'
+                });
+                
+                const responseText = await response.text();
+                document.getElementById('customerLoading').classList.remove('show');
+                
+                if (response.ok) {
+                    document.getElementById('customerResponse').innerHTML = `<div class="success">✅ ลบข้อมูลลูกค้าทั้งหมดสำเร็จ!\n\nResponse (${response.status}):\n${responseText}</div>`;
+                } else {
+                    document.getElementById('customerResponse').innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด!\n\nStatus: ${response.status}\nResponse:\n${responseText}</div>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('customerLoading').classList.remove('show');
+                document.getElementById('customerResponse').innerHTML = `<div class="error">❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n\nError: ${error.message}</div>`;
+            }
+        }
+
+        // Initialize default values
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default manufacture date to today
+            document.getElementById('manufactureDate').valueAsDate = new Date();
+        });
+    </script>
+</body>
+</html>
