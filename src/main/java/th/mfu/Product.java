@@ -1,11 +1,14 @@
 package th.mfu;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -20,6 +23,10 @@ public class Product {
     private String description;
     private LocalDate manufactureDate;
     
+    @OneToMany(mappedBy = "product")
+@JsonManagedReference("productreview-product")
+private List<ProductReview> productReviews;
+
     public String getName() {
         return name;
     }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,10 @@ public class CustomerController {
     @Autowired
     CustomerRepository customerRepo;
 
+    @Autowired
+    private CustomerTierRepository customerTierRepo;
+
+
     @GetMapping("/customers")
     public ResponseEntity<Collection> getAllCustomers() {
         return new ResponseEntity<Collection>(customerRepo.findAll(), HttpStatus.OK);
@@ -29,6 +33,14 @@ public class CustomerController {
 
     @PostMapping("/customers")
     public ResponseEntity<String> createCustomer(@RequestBody Customer customer){
+        if (customer.getCustomerTier() != null && customer.getCustomerTier().getId() != null) {
+            Optional<CustomerTier> tierOptional =  customerTierRepo.findById(customer.getCustomerTier().getId());
+            if (tierOptional.isPresent()) {
+                customer.setCustomerTier(tierOptional.get());
+            } else {
+                return new ResponseEntity<String>("Customer tier not found", HttpStatus.NOT_FOUND);
+            }
+        }
         customerRepo.save(customer);
         return new ResponseEntity<String>("Customer created", HttpStatus.CREATED);
     }
